@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "2.C": "cpp",
+        "tinyexpr.h": "c",
+        "stdlib.h": "c"
+    }
+}
