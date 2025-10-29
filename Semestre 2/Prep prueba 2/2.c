@@ -47,21 +47,21 @@ int calcularRutas(char laberinto[FILAS][COLUMNAS], int x,int y){
     if (laberinto[x][y]=='B'){
         return 1;
     }
-    laberinto[x][y] = 'c';
+    laberinto[x][y] = 'A';
     //movimientos
-    if (x + 1 < FILAS && (laberinto[x + 1][y] == ' ' || laberinto[x + 1][y] == 'B')) {
+    if ((laberinto[x + 1][y] == ' ' || laberinto[x + 1][y] == 'B')) {
         if (calcularRutas(laberinto, x + 1, y)) return 1;
     }
 
-    if (x - 1 >= 0 && (laberinto[x - 1][y] == ' ' || laberinto[x - 1][y] == 'B')) {
+    if ((laberinto[x - 1][y] == ' ' || laberinto[x - 1][y] == 'B')) {
         if (calcularRutas(laberinto, x - 1, y)) return 1;
     }
 
-    if (y + 1 < COLUMNAS && (laberinto[x][y + 1] == ' ' || laberinto[x][y + 1] == 'B')) {
+    if ((laberinto[x][y + 1] == ' ' || laberinto[x][y + 1] == 'B')) {
         if (calcularRutas(laberinto, x, y + 1)) return 1;
     }
 
-    if (y - 1 >= 0 && (laberinto[x][y - 1] == ' ' || laberinto[x][y - 1] == 'B')) {
+    if ((laberinto[x][y - 1] == ' ' || laberinto[x][y - 1] == 'B')) {
         if (calcularRutas(laberinto, x, y - 1)) return 1;
     }
 
