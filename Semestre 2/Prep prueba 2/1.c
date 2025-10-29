@@ -1,56 +1,93 @@
 #include <stdio.h>
 
-int TABLERO();
+#define N 5
 
-int main()
-{
-    TABLERO();
+typedef struct coord{
+    int fil;
+    int col;
+    int valor;
+} COORD;
+
+void lectura(char *, int [][N]);
+void muestra_matriz(int [][N]);
+COORD busca_silla(int [][N]);
+void salida (COORD, int [][N]);
+
+int main(){
+    int m[N][N];
+    COORD silla;
+    lectura ("1.txt", m);
+    silla = busca_silla(m);
+    salida(silla, m);
+    return 0;
 }
 
-//FUNCIONES
-
-int TABLERO(){
-    FILE *num; //crea un puntero al archivo
-    num=fopen("1.txt","r"); //abre el archivo y lo asigna como referencia a num, la r es para indicar que solo estamos leyendo el archivo
-    int matriz[5][5]; //crea la matriz "matrix" con punteros 
-    //el bucle que sirve para guardar los datos del archivo en la matriz
-    for (int i=0;i<5;i++){
-        for (int j=0;j<5;j++){
-            fscanf(num,"%i",&matriz[i][j]); //es la funcion que lee y escribe, le pasamos el tipo de archivo
+void lectura(char *nombre, int m[][N]){
+    FILE *ent;
+    ent = fopen(nombre, "r");
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            fscanf(ent, "%d", &m[i][j]);
         }
     }
-    /*
-    imprimir la matriz, para comprobaciones
-    for (int i=0;i<5;i++){
-        for (int j=0;j<5;j++){
-            printf("%d ",matriz[i][j]);
+    fclose(ent);
+}
+
+void muestra_matriz(int m[][N]){
+    for (int i= 0; i < N; i++){
+        for(int j=0; j < N; j++){
+            printf("%3d ", m[i][j]);
         }
         printf("\n");
     }
-    */
-   
-//menor de la fila
-int menor_fila;
-int columna_menor;
-for (int i=0; i<5;i++){
-    menor_fila=matriz[i][0];
-        for (int j=0;j<5;j++){
-            if (matriz[i][j]<menor_fila){
-                menor_fila=matriz[i][j];
-                columna_menor = j;
-            }
-        }
-    for (int k=0;k<5;k++){
-        if (matriz[k][columna_menor]){
-
-        }
-    }
-    printf("%d-%d\n",menor_fila,columna_menor);
-    }
 }
 
+COORD busca_silla(int m[][N]) {
+    COORD silla;
+    int lo_encontre = 0;
+    int menor_fila;
+    for (int i = 0; i < N; i++) {
+        int menor_fila = m[i][0];
+        int menor_col = 0;
+        for (int j = 1; j < N; j++) {
+            if (m[i][j] < menor_fila) {
+                menor_fila = m[i][j];
+                menor_col = j;
+    
+            }
+        }
 
+        int es_silla = 1;
+        for (int k = 0; k < N; k++) {
+            if (m[k][menor_col] > menor_fila) {
+                es_silla = 0;
+                break;
+            }
+        }
 
-//encontrar el menor de cada fila, y despues el mayor de esos.
+        if (es_silla) {
+            silla.fil = i;
+            silla.col = menor_col;
+            silla.valor = menor_fila;
+            lo_encontre = 1;
+        }
+    }
 
+    if (!lo_encontre) {
+        silla.fil = -1;
+        silla.col = -1;
+        silla.valor = -1;
+    }
+    return silla;
+}
 
+void salida (COORD silla, int m[][N]){
+    if (silla.fil != -1){
+        printf("\nPosicion de la silla [%d][%d] = %d\n", silla.fil, silla.col, silla.valor);
+    }
+    else{
+       printf("\nLa matriz no tiene punto silla.\n");
+    }
+    printf("\nMatriz\n");
+    muestra_matriz(m);
+}
