@@ -17,19 +17,26 @@ char laberinto[FILAS][COLUMNAS] = {
     {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' '},
     {'#', '#', '#', '#', '#', '#', '#', '#', '#', 'B'}};
 // Prototipos de funciones
-void mostrarLaberinto();
-void calcularRutas(char laberinto[FILAS][COLUMNAS],int x,int y);
+void mostrarlaberinto();
+int calcularRutas(char laberinto[FILAS][COLUMNAS],int x,int y);
 
 int main(){
-    printf("----- BUSCANDO EL CAMINO DEL LABERINTO RECURSIVO ---\n");
+    printf("----- BUSCANDO EL CAMINO DEL laberinto RECURSIVO ---\n");
     printf("Buscando el camino desde A hasta B \n");
-    mostrarLaberinto();
-    calcularRutas(laberinto, INICIOx,INICIOy);
+    mostrarlaberinto();
+    if(calcularRutas(laberinto, INICIOx,INICIOy)){
+        printf("Hecho\n");
+        mostrarlaberinto();
+    } else {
+        printf("Sin camino\n");
+    }
+    return 0;
+
 }
 
 //funciones
 
-void mostrarLaberinto(){
+void mostrarlaberinto(){
     for (int i = 0; i < FILAS; i++)
     {
         for (int j = 0; j < COLUMNAS; j++)
@@ -40,12 +47,32 @@ void mostrarLaberinto(){
     }
     printf("\n");
 }
-void calcularRutas(laberinto, int x,int y){
-
-
-
-
-
-
-    
+int calcularRutas(char laberinto[FILAS][COLUMNAS], int x,int y){
+    if (laberinto[x][y]=='B'){
+        return 1;
     }
+    laberinto[x][y] = 'c';
+    //movimientos
+    // Mover hacia abajo
+    if (x + 1 < FILAS && (laberinto[x + 1][y] == ' ' || laberinto[x + 1][y] == 'B')) {
+        if (calcularRutas(laberinto, x + 1, y)) return 1;
+    }
+
+    // Mover hacia arriba
+    if (x - 1 >= 0 && (laberinto[x - 1][y] == ' ' || laberinto[x - 1][y] == 'B')) {
+        if (calcularRutas(laberinto, x - 1, y)) return 1;
+    }
+
+    // Mover hacia la derecha
+    if (y + 1 < COLUMNAS && (laberinto[x][y + 1] == ' ' || laberinto[x][y + 1] == 'B')) {
+        if (calcularRutas(laberinto, x, y + 1)) return 1;
+    }
+
+    // Mover hacia la izquierda
+    if (y - 1 >= 0 && (laberinto[x][y - 1] == ' ' || laberinto[x][y - 1] == 'B')) {
+        if (calcularRutas(laberinto, x, y - 1)) return 1;
+    }
+
+    laberinto[x][y] = ' ';
+    return 0;
+}

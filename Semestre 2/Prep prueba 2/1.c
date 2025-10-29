@@ -45,7 +45,6 @@ void muestra_matriz(int m[][N]){
 COORD busca_silla(int m[][N]) {
     COORD silla;
     int lo_encontre = 0;
-    int menor_fila;
     for (int i = 0; i < N; i++) {
         int menor_fila = m[i][0];
         int menor_col = 0;
