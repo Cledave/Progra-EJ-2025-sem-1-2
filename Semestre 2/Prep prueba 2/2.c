@@ -22,7 +22,7 @@ int calcularRutas(char laberinto[FILAS][COLUMNAS],int x,int y);
 int resultadolab(char laberinto[FILAS][COLUMNAS]);
 
 int main(){
-    printf("----- dungeon of the dragon!!! ---\n");
+    printf("----- TESO ---\n"); //cambia el nombre
     mostrarlaberinto();
     resultadolab(laberinto);
     return 0;
@@ -76,8 +76,8 @@ int calcularRutas(char laberinto[FILAS][COLUMNAS], int x,int y){
     return 0;
 }
 int resultadolab(char laberinto[FILAS][COLUMNAS]){
-    if(calcularRutas(laberinto, INICIOx,INICIOy)){
-        mostrarlaberinto();
+    if(calcularRutas(laberinto, INICIOx,INICIOy)){  //si esto devolvio 1 y no 0 
+        mostrarlaberinto();                         //imprime el laberinto
     } else {
         printf("Sin camino\n");
     }
