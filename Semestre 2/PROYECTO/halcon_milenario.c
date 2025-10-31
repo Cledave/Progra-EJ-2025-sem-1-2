@@ -5,7 +5,7 @@
 // bibliotecas
 #include <stdio.h>
 
-// define
+// definiciones
 #define MAX_TAM 50
 #define MAX_ORD 80
 
@@ -20,9 +20,10 @@ void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y,
                       int planeta_x, int planeta_y, int cant_estrellas, int estrellas[][2], 
                       int cant_destructores, int destructores[][2]);
 
-int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes);
- 
-//void escribir_resultado(const char *frase);
+int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes,int planeta_x, int planeta_y,
+                int cant_estrellas, int estrellas[][2],int cant_destructores, int destructores[][2]);
+
+void escribir_resultado(int rc);
 
 
 int main(){
@@ -47,20 +48,14 @@ int main(){
     int x = inicial_x; 
     int y = inicial_y;
     char ori = orientacion;
-    int rc_final = movimientos(filas, columnas, &x, &y, &ori, ordenes, num_ordenes);
-    if (rc_final == 0) {
-        if (x == planeta_x && y == planeta_y){
-             printf("Llegamos a salvo\n");                       
-    } else if (rc_final == 2) {
-    printf("Orden u orientación inválida\n");
-    }
-    
+    int rc_final = movimientos(filas, columnas, &x, &y, &ori, ordenes, num_ordenes,planeta_x,planeta_y,cant_estrellas,estrellas,cant_destructores,destructores);
+    escribir_resultado(rc_final);
     creacion_tablero(filas,columnas,inicial_x,inicial_y,
                      planeta_x,planeta_y,cant_estrellas,estrellas,
                      cant_destructores,destructores);
     
+    
     return 0;
-    }
 }
 
 void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, int *planeta_x, int *planeta_y,
@@ -92,6 +87,7 @@ void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, in
     fscanf(situacion,"%d", num_ordenes);
     fscanf(situacion,"%s", ordenes);;
     
+    //Cierra el archivo que se abrio en solo lectura
     fclose(situacion);
 /*
     printf("%d-%d",columnas,filas);
@@ -111,7 +107,8 @@ void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, in
 */
 }
 
-void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int planeta_x, int planeta_y, int cant_estrellas, int estrellas[][2], int cant_destructores, int destructores[][2]){
+void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int planeta_x, int planeta_y, 
+                      int cant_estrellas, int estrellas[][2], int cant_destructores, int destructores[][2]){
     
     char espacio[filas][columnas];
 
@@ -141,7 +138,7 @@ void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int
         if (estrella_x>=0 && estrella_x<columnas && estrella_y>=0&&estrella_y<filas){
             espacio[estrella_y][estrella_x] = 'E';
         } else {
-            printf("etrella fuera de rango (%d,%d)\n", estrella_y, estrella_x);
+            printf("estrella fuera de rango (%d,%d)\n", estrella_y, estrella_x);
         }
     }
 
@@ -166,11 +163,23 @@ void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int
     }
 }
 
-int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes){
+int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes,int planeta_x, int planeta_y,
+                int cant_estrellas, int estrellas[][2],int cant_destructores, int destructores[][2]){
+    
+    for (int i=0;i<cant_destructores;i++){
+        if (destructores[i][1]==*x && destructores[i][0]==*y) return 3;
+    }
+    for (int i=0;i<cant_estrellas;i++){
+        if (estrellas[i][1]==*x && estrellas[i][0]==*y) return 3;
+    }
+    if (*x==planeta_x && *y==planeta_y){
+        return 1;
+    } 
+
     for (int i = 0; i < num_ordenes; i++) {
         char orden = ordenes[i];
     if (orden == 'I') {                 
-        if (*orientacion == 'N'){
+        if  (*orientacion == 'N'){
             *orientacion = 'O';
         } else if (*orientacion == 'O'){
             *orientacion = 'S';
@@ -184,16 +193,13 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
         continue;
     } 
     else if (orden == 'D') {        
-        if      (*orientacion == 'N'){
+        if  (*orientacion == 'N'){
             *orientacion = 'E';
-        }
-        else if (*orientacion == 'E'){
+        } else if (*orientacion == 'E'){
             *orientacion = 'S';
-        }
-        else if (*orientacion == 'S'){
+        } else if (*orientacion == 'S'){
             *orientacion = 'O';
-        }
-        else if (*orientacion == 'O'){
+        } else if (*orientacion == 'O'){
             *orientacion = 'N';
         } else {
             return 2;
@@ -202,16 +208,13 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
     } 
     else if (orden == 'A') {            
         int direccion_x = 0, direccion_y = 0;
-        if      (*orientacion == 'N'){
+        if (*orientacion == 'N'){
             direccion_y = -1;
-        }
-        else if (*orientacion == 'S'){
+        } else if (*orientacion == 'S'){
             direccion_y =  1;
-        }
-        else if (*orientacion == 'E'){
+        } else if (*orientacion == 'E'){
             direccion_x =  1;
-        }
-        else if (*orientacion == 'O'){
+        } else if (*orientacion == 'O'){
             direccion_x = -1;
         } else {
             return 2;
@@ -225,10 +228,37 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
         }
         *x = nuevo_x;
         *y = nuevo_y;
-
+        
+        for (int j=0;j<cant_destructores;j++){
+            if (destructores[j][1]==*x && destructores[j][0]==*y){
+                return 3;
+            }
+        }
+        for (int j=0;j<cant_estrellas;j++){
+            if (estrellas[j][1]==*x && estrellas[j][0]==*y){
+                return 3;
+            }
+        }
+        if (*x==planeta_x && *y==planeta_y) {
+            return 1;
+        }
         } else {
             return 2;
         }
     }
 return 0;
+}
+
+void escribir_resultado(int rc){
+    FILE *final = fopen("situacion_final.txt", "w");
+    if (rc == 1) {
+        fprintf(final, "%s", "Llegamos a salvo");
+        fclose(final);
+    } else if (rc == 3) {
+        fprintf(final, "%s", "Nave destruida");
+        fclose(final);
+    } else {
+        fprintf(final, "%s", "Nave perdida");
+        fclose(final);
+    }
 }
