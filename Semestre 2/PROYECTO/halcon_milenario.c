@@ -16,13 +16,16 @@ void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y,
                    int *cant_destructores, int destructores[][2],
                    char *orientacion, int *num_ordenes, char ordenes[]);
 
+//crea el tablero tambien indica si algo esta fuera de rango
 void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y,
                       int planeta_x, int planeta_y, int cant_estrellas, int estrellas[][2], 
                       int cant_destructores, int destructores[][2]);
 
+//Procesa las ordenas de movimiento desde el txt y procesa los resultados
 int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes,int planeta_x, int planeta_y,
                 int cant_estrellas, int estrellas[][2],int cant_destructores, int destructores[][2]);
 
+//Funcion simple que crea el txt final
 void escribir_resultado(int rc);
 
 
@@ -32,13 +35,14 @@ int main(){
     int inicial_x, inicial_y;
     int planeta_x, planeta_y;
     int cant_estrellas, cant_destructores;
-    int estrellas[MAX_TAM][2];
-    int destructores[MAX_TAM][2];
+    int estrellas[2500][2];         
+    int destructores[2500][2];
 
     char orientacion;
     int num_ordenes;
-    char ordenes[MAX_ORD+1];
+    char ordenes[MAX_ORD+1]; //+1 para almacenar el \0
 
+    //Lee toda la configuracion desde el txt inicial
     lectura_datos(&filas, &columnas, &inicial_x, &inicial_y, 
                   &planeta_x, &planeta_y, &cant_estrellas, estrellas, 
                   &cant_destructores, destructores,
@@ -48,17 +52,20 @@ int main(){
     int x = inicial_x; 
     int y = inicial_y;
     char ori = orientacion;
+    
+    //Ejecuta los movimientos y guarda el int del return para dar el veredicto final
     int rc_final = movimientos(filas, columnas, &x, &y, &ori, ordenes, num_ordenes,planeta_x,planeta_y,cant_estrellas,estrellas,cant_destructores,destructores);
     escribir_resultado(rc_final);
+    
     creacion_tablero(filas,columnas,inicial_x,inicial_y,
                      planeta_x,planeta_y,cant_estrellas,estrellas,
                      cant_destructores,destructores);
     
     
     return 0;
-}
+    }   
 
-void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, int *planeta_x, int *planeta_y,
+    void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, int *planeta_x, int *planeta_y,
                    int *cant_estrellas, int estrellas[][2], int *cant_destructores, int destructores[][2],
                    char *orientacion, int *num_ordenes, char ordenes[]){
 
@@ -68,6 +75,7 @@ void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, in
     if (situacion == NULL) {            
         printf("No se puede abrir el archivo.");
     }   
+
     // Escanea linea por linea y va guardando segun el formato dado en el txt
     fscanf(situacion, "%d;%d",filas,columnas);
     fscanf(situacion, "%d;%d",inicial_y,inicial_x);
@@ -87,9 +95,10 @@ void lectura_datos(int *filas, int *columnas, int *inicial_x, int *inicial_y, in
     fscanf(situacion,"%d", num_ordenes);
     fscanf(situacion,"%s", ordenes);;
     
-    //Cierra el archivo que se abrio en solo lectura
+    //Cierra el archivo txt que se abrio
     fclose(situacion);
-/*
+
+/*  //Para comprobar que las variables se guarden bien
     printf("%d-%d",columnas,filas);
     printf("\n%d-%d",inicial_x,inicial_y);
     printf("\n%d-%d",planeta_x,planeta_y);
@@ -153,7 +162,7 @@ void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int
         }
     }
 
-    // imprimir
+    /*// imprimir el tablero
     printf("\n--ESPACIO--\n");
     for (int y = 0; y < filas; y++) {
         for (int x = 0; x < columnas; x++) {
@@ -161,11 +170,14 @@ void creacion_tablero(int filas, int columnas, int inicial_x, int inicial_y, int
         }
         printf("\n");
     }
+    */
+
 }
 
 int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const char ordenes[], int num_ordenes,int planeta_x, int planeta_y,
                 int cant_estrellas, int estrellas[][2],int cant_destructores, int destructores[][2]){
     
+    //estos 2 ciclos son para comprobar que la posicion inicial de la nava no sea encima de una estrella/destructor, el if es para el planeta
     for (int i=0;i<cant_destructores;i++){
         if (destructores[i][1]==*x && destructores[i][0]==*y) return 3;
     }
@@ -175,10 +187,10 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
     if (*x==planeta_x && *y==planeta_y){
         return 1;
     } 
-
+    
     for (int i = 0; i < num_ordenes; i++) {
         char orden = ordenes[i];
-    if (orden == 'I') {                 
+    if (orden == 'I') {                     //Girar izquierda  
         if  (*orientacion == 'N'){
             *orientacion = 'O';
         } else if (*orientacion == 'O'){
@@ -188,11 +200,11 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
         } else if (*orientacion == 'E'){
             *orientacion = 'N';
         } else {
-            return 2;
+            return 2;                       //Nave perdida
         }
         continue;
     } 
-    else if (orden == 'D') {        
+    else if (orden == 'D') {               //Girar derecha
         if  (*orientacion == 'N'){
             *orientacion = 'E';
         } else if (*orientacion == 'E'){
@@ -202,11 +214,11 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
         } else if (*orientacion == 'O'){
             *orientacion = 'N';
         } else {
-            return 2;
+            return 2;                       //Nave perdida
         }
         continue;
     } 
-    else if (orden == 'A') {            
+    else if (orden == 'A') {              //Avanzar
         int direccion_x = 0, direccion_y = 0;
         if (*orientacion == 'N'){
             direccion_y = -1;
@@ -217,18 +229,21 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
         } else if (*orientacion == 'O'){
             direccion_x = -1;
         } else {
-            return 2;
+            return 2;                      //Orden Invalida
         }
 
         int nuevo_x = *x + direccion_x;
         int nuevo_y = *y + direccion_y;
 
+        //Comprobar que no sale del mapa
         if (nuevo_x<0 || nuevo_x>=columnas || nuevo_y<0 || nuevo_y>=filas) {
-            return 2;
+            return 2;                   //Nave perdida
         }
+        //Cambia los punteros a la ultima posicion
         *x = nuevo_x;
         *y = nuevo_y;
         
+        //Colisiones con estrella/destructor
         for (int j=0;j<cant_destructores;j++){
             if (destructores[j][1]==*x && destructores[j][0]==*y){
                 return 3;
@@ -239,6 +254,7 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
                 return 3;
             }
         }
+        //Si llega al planeta retorna 1
         if (*x==planeta_x && *y==planeta_y) {
             return 1;
         }
@@ -246,18 +262,18 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
             return 2;
         }
     }
-return 0;
+
 }
 
 void escribir_resultado(int rc){
     FILE *final = fopen("situacion_final.txt", "w");
-    if (rc == 1) {
+    if (rc == 1) {                  //Llega al planeta
         fprintf(final, "%s", "Llegamos a salvo");
         fclose(final);
-    } else if (rc == 3) {
+    } else if (rc == 3) {           //Choco con estrella o destructor
         fprintf(final, "%s", "Nave destruida");
         fclose(final);
-    } else {
+    } else {                        //Se salio de los limites o algo mas
         fprintf(final, "%s", "Nave perdida");
         fclose(final);
     }
