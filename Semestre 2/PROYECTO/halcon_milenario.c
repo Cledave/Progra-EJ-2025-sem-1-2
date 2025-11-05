@@ -90,8 +90,8 @@ int main(){
         for (int i=0; i < *cant_destructores;i=i+1) {
             fscanf(situacion, "%d;%d", &destructores[i][0], &destructores[i][1]);
         }
-    
-    fscanf(situacion," %c",orientacion);
+
+        fscanf(situacion," %c",orientacion);
     fscanf(situacion,"%d", num_ordenes);
     fscanf(situacion,"%s", ordenes);;
     
@@ -262,7 +262,6 @@ int movimientos(int filas, int columnas, int *x, int *y, char *orientacion,const
             return 2;
         }
     }
-
 }
 
 void escribir_resultado(int rc){
